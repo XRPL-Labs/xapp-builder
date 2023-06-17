@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Workspace</title>
+    <!-- <meta name="color-scheme" content="dark" /> -->
+    <!-- <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
+    /> -->
+    <!-- <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+      crossorigin="anonymous"
+    ></script> -->
+    <!-- <link rel="stylesheet" href="https://use.typekit.net/vtt7ckl.css" /> -->
+    <!-- <script src="https://xumm.app/assets/cdn/xumm-sdk.min.js"></script> -->
+    <!-- <script defer src="https://cdn.ably.com/lib/ably.min-1.js"></script> -->
+    <link href="../assets/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/bootstrap/bootstrap-icons.css" />
+    <script src="../assets/bootstrap/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../assets/font/vtt7ckl.css" />
+    <link rel="stylesheet" href="../assets/style.css" />
+    <script src="../assets/xumm-sdk/xumm-sdk.min.js"></script>
+    <script defer src="../assets/ably/ably.min-1.js"></script>
+    <script defer src="./helpers/events.js"></script>
+    <script defer src="./work.js"></script>
+  </head>
+  <body onload="loadxApp()">
+    <!-- <iframe name="ReactNativeWebView" style="display: none"></iframe> -->
+    <div class="p-0 m-0">
+      <div class="hstack align-items-start gap-3">
+        <div class="text-bg-light" id="sidebar">
+          <div class="vstack text-bg-light">
+            <div class="ms-4 card hstack gap-2 text-bg-light">
+              <img
+                src="../assets/images/appicon.png"
+                width="52"
+                height="52"
+                class="img-thumbnail"
+                loading="lazy"
+              />
+              <div class="vstack gap-0">
+                <h4 class="small fw-bold mt-4 d-inline">Xumm Developer</h4>
+                <a
+                  class="mb-3 noDecoration small text-secondary m-0 p-0 clickable invisible"
+                  onclick="xAppImporter()"
+                  title="New QR Code"
+                  id="logged-out"
+                >
+                  Generate new QR Code
+                </a>
+                <div class="hstack mb-3 gap-4 invisible" id="logged-in">
+                  <a
+                    class="noDecoration small text-secondary clickable"
+                    onclick="loadCard(true)"
+                    title="Refetch"
+                  >
+                    Refetch
+                  </a>
+                  <a
+                    class="noDecoration small text-secondary clickable"
+                    onclick="Logout()"
+                    title="Logout"
+                  >
+                    Logout
+                  </a>
+                </div>
+              </div>
+            </div>
+            <hr class="text-light m-0 p-0" />
+            <div class="card">
+              <div class="mt-5 text-center invisible" id="importer">
+                <img
+                  id="uuid"
+                  width="150"
+                  height="150"
+                  style="border: 0px"
+                  class="img-fluid img-thumbnail"
+                  loading="lazy"
+                  src="../assets/images/loading.gif"
+                />
+                <div class="text-center mt-2">
+                  <a
+                    href="#"
+                    class="noDecoration small clickable"
+                    onclick="openExternal(`https://xumm.app/`)"
+                    >Scan above QR code using Xumm.
+                  </a>
+                </div>
+              </div>
+              <ul class="list-group invisible" id="xapp-list"></ul>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div id="phone-frame">
+            <div class="vstack gap-1" id="title-context-refresh">
+              <div id="title" class="text-center mt-2 small">Workspace</div>
+              <div class="hstack gap-1 ms-3 fade" id="selection-refresh-div">
+                <select
+                  class="form-select form-select-sm"
+                  id="raddresses"
+                  onchange="context(this)"
+                ></select>
+                <button
+                  class="btn btn-sm btn-light"
+                  onclick="webViewReload()"
+                  title="Reload"
+                  id="webview-reload"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-arrow-clockwise"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"
+                    />
+                    <path
+                      d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <img
+              src="./../assets/device-frame/pixel-5.png"
+              id="frame-img"
+              class="noselect"
+              draggable="false"
+            />
+
+            <div class="bg-transparent" id="frame-div">
+              <div class="vstack">
+                <div class="mt-4 row ms-1 me-1" id="xapp-header">
+                  <div class="col fw-bolder mt-2 fs-5" id="appName">
+                    App Name
+                  </div>
+                  <div class="col-auto mt-2">
+                    <button
+                      class="btn btn-dark btn-sm rounded-4"
+                      onclick="xAppClose();"
+                    >
+                      Quit xApp
+                    </button>
+                  </div>
+                </div>
+                <webview
+                  class="mainWindow"
+                  preload="./preloadwebview.js"
+                  src="../splashscreen.html"
+                >
+                </webview>
+              </div>
+              <span
+                id="loader"
+                style="
+                  max-width: 291px;
+                  height: 610px;
+                  z-index: 10;
+                  position: relative;
+                  top: -333px;
+                  left: 108px;
+                  font-weight: bolder;
+                "
+              ></span>
+              <!-- Transaction details -->
+              <div
+                class="modal fade"
+                id="paymentModal"
+                data-bs-backdrop="false"
+                data-bs-keyboard="true"
+                tabindex="-1"
+                aria-labelledby="paymentModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-fullscreen modal-css">
+                  <div class="modal-content">
+                    <div class="gap-2 modal-header hstack mt-3">
+                      <i
+                        class="bi bi-arrow-left clickable"
+                        data-bs-dismiss="modal"
+                      ></i>
+                      <span>Transaction details</span>
+
+                      <div class="dropdown">
+                        <i
+                          class="bi bi-three-dots pointing"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        ></i>
+
+                        <ul class="dropdown-menu">
+                          <li>
+                            <a
+                              class="dropdown-item"
+                              href="#"
+                              data-bs-toggle="modal"
+                              data-bs-target="#openShareModal"
+                              id="transactionDetailShareBtn"
+                              >Share</a
+                            >
+                          </li>
+                          <li>
+                            <a
+                              class="dropdown-item"
+                              href="#"
+                              id="transactionDetailBrowserBtn"
+                              >Open in browser</a
+                            >
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="modal-body">
+                      <div
+                        class="text-center fw-bold"
+                        id="transactionType"
+                      ></div>
+                      <div class="text-center">
+                        <div
+                          class="small badge"
+                          id="transactionStatus"
+                          style="width: auto"
+                        ></div>
+                      </div>
+
+                      <div
+                        class="m-1 text-center small"
+                        style="font-size: x-small"
+                        id="transactionDate"
+                      ></div>
+                      <div class="text-center" id="amount">
+                        <div
+                          class="gap-2 fw-bold badge text-bg-light hstach bigSpace"
+                        >
+                          <i class="bi" id="in-out"></i>
+                          <span id="transactionAmount"></span>
+                        </div>
+                      </div>
+
+                      <hr />
+
+                      <div class="gap-2 hstack badge text-bg-light">
+                        <img
+                          width="32"
+                          height="32"
+                          id="fromAvatar"
+                          loading="lazy"
+                        />
+                        <div class="gap-1 mt-1 vstack">
+                          <span class="fw-bold text-start">From</span>
+                          <span
+                            id="fromAddress"
+                            class="small fw-normal text-start"
+                          ></span>
+                        </div>
+                      </div>
+
+                      <div class="text-center" id="down-arrow">
+                        <i class="bi bi-arrow-down"></i>
+                      </div>
+                      <div
+                        class="spinner-grow invisible text-center ms-5"
+                        role="status"
+                        id="paymentSpinner"
+                      >
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+
+                      <div
+                        class="gap-2 hstack badge text-bg-light mt-3"
+                        id="to"
+                      >
+                        <img
+                          width="32"
+                          height="32"
+                          id="toAvatar"
+                          loading="lazy"
+                        />
+                        <div class="gap-1 mt-1 vstack">
+                          <span class="fw-bold text-start">To</span>
+                          <span
+                            id="toAddress"
+                            class="small fw-normal text-start"
+                          ></span>
+                        </div>
+                      </div>
+                      <hr />
+                      <div class="fw-bold small">Transaction ID</div>
+                      <div class="small" id="transactionId"></div>
+                      <br />
+                      <div class="fw-bold small">Status</div>
+                      <div class="small text-wrap" id="transactionFinal"></div>
+                    </div>
+                    <div
+                      class="modal-footer small text-break text-start d-flex justify-content-start mockMessage"
+                    >
+                      This is just a mock screen. It might differ from the
+                      actual content and design present inside Xumm.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Share  -->
+              <div
+                class="modal fade"
+                id="openShareModal"
+                data-bs-backdrop="false"
+                data-bs-keyboard="false"
+                tabindex="-1"
+                aria-labelledby="openShareModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-fullscreen modal-css">
+                  <div class="modal-content">
+                    <div class="modal-header mt-3 row">
+                      <div id="shareTitle" class="small text-break col"></div>
+                      <button class="btn btn-sm btn-light p-0 col-auto">
+                        <i class="bi bi-clipboard2" id="copy"></i>
+                        <i
+                          class="bi bi-clipboard2-check invisible"
+                          id="copied"
+                        ></i>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="text-center"></div>
+                      <div class="text-center vstack gap-2">
+                        <div class="hstack gap-2">
+                          <img
+                            class="mx-auto rounded d-block card-img-top placeholder"
+                            width="48"
+                            height="48"
+                            loading="lazy"
+                          />
+                          <img
+                            class="mx-auto rounded d-block card-img-top placeholder"
+                            width="48"
+                            height="48"
+                            loading="lazy"
+                          />
+                          <img
+                            class="mx-auto rounded d-block card-img-top placeholder"
+                            width="48"
+                            height="48"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div class="hstack gap-2">
+                          <img
+                            class="mx-auto rounded d-block card-img-top placeholder"
+                            width="48"
+                            height="48"
+                            loading="lazy"
+                          />
+                          <img
+                            class="mx-auto rounded d-block card-img-top placeholder"
+                            width="48"
+                            height="48"
+                            loading="lazy"
+                          />
+                          <img
+                            class="mx-auto rounded d-block card-img-top placeholder"
+                            width="48"
+                            height="48"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div class="hstack gap-2">
+                          <img
+                            class="mx-auto rounded d-block card-img-top placeholder"
+                            width="48"
+                            height="48"
+                            loading="lazy"
+                          />
+                          <img
+                            class="mx-auto rounded d-block card-img-top placeholder"
+                            width="48"
+                            height="48"
+                            loading="lazy"
+                          />
+                          <img
+                            class="mx-auto rounded d-block card-img-top placeholder"
+                            width="48"
+                            height="48"
+                            loading="lazy"
+                          />
+                        </div>
+                      </div>
+                      <br />
+                      <div class="text-center mt-5 fw-bold mb-5">
+                        Share Screen
+                      </div>
+                      <div
+                        class="small text-break text-start d-flex justify-content-start mockMessage mt-5"
+                      >
+                        This is just a mock screen. It might differ from the
+                        actual content and design present inside Xumm.
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        class="btn btn-sm btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- openBrowser  -->
+              <div
+                class="modal fade"
+                id="dialogModal"
+                tabindex="-1"
+                aria-hidden="true"
+                data-bs-backdrop="static"
+                data-bs-keyboard="true"
+              >
+                <div class="modal-dialog modal-dialog-css">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <div class="text-center text-warning">
+                        <img
+                          alt="app icon"
+                          id="dialog-image"
+                          class="img-fluid rounded-circle"
+                          width="52"
+                          height="52"
+                          loading="lazy"
+                        />
+                        <br />
+                        <h5>Notice</h5>
+                      </div>
+                      <div class="small">
+                        '<span id="app-name"></span>' xApp wants to open this
+                        URL:<br /><br />
+                        <div id="external-url" style="font-size: x-small"></div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-light btn-sm"
+                        data-bs-dismiss="modal"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        data-bs-dismiss="modal"
+                        id="open-external-link"
+                      >
+                        Continue
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- openSignRequestBtn -->
+              <div
+                class="modal fade"
+                id="signRequestModal"
+                data-bs-backdrop="false"
+                data-bs-keyboard="false"
+                tabindex="-1"
+                aria-labelledby="signRequestModalLabel"
+              >
+                <div class="modal-dialog modal-fullscreen modal-css">
+                  <div class="modal-content">
+                    <div class="modal-header mt-3">
+                      <span>Review transaction</span>
+                      <button
+                        class="btn btn-sm btn-dark"
+                        type="button"
+                        data-bs-dismiss="modal"
+                        id="reject-payment"
+                      >
+                        Close
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="text-center">
+                        <img
+                          class="mx-auto rounded d-block"
+                          id="icon_url"
+                          width="48"
+                          height="48"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div class="text-center">
+                        <div class="fw-bold small" id="application_name"></div>
+                      </div>
+
+                      <div class="mt-1 text-center small fw-bold">Details</div>
+                      <div
+                        class="mb-1 text-center small"
+                        id="instruction"
+                      ></div>
+                      <div class="text-center">
+                        <div class="fw-bold small">Type</div>
+                        <div
+                          class="fw-bold text-primary small"
+                          id="transactionType-review"
+                        ></div>
+                      </div>
+
+                      <hr />
+
+                      <div class="gap-2 hstack badge text-bg-light">
+                        <img
+                          width="32"
+                          height="32"
+                          id="fromAvatar-review"
+                          loading="lazy"
+                        />
+                        <div class="gap-1 mt-1 vstack">
+                          <span class="fw-bold text-start">Sign with</span>
+                          <span
+                            id="fromAddress-review"
+                            class="small fw-normal text-start"
+                          ></span>
+                        </div>
+                      </div>
+
+                      <div class="text-center invisible" id="down-arrow-review">
+                        <i class="bi bi-arrow-down"></i>
+                      </div>
+
+                      <div
+                        class="gap-2 hstack badge text-bg-light invisible"
+                        id="to-review"
+                      >
+                        <img
+                          width="32"
+                          height="32"
+                          id="toAvatar-review"
+                          loading="lazy"
+                        />
+                        <div class="gap-1 mt-1 vstack">
+                          <span class="fw-bold text-start">To</span>
+                          <span
+                            id="toAddress-review"
+                            class="small fw-normal text-start"
+                          ></span>
+                        </div>
+                      </div>
+                      <hr />
+                      <div id="amount-review">
+                        <div class="fw-bold">Amount</div>
+                        <div
+                          class="m-1 fw-bold text-primary"
+                          id="amountRequested"
+                        ></div>
+                      </div>
+                      <div class="fw-bold">Transaction fee</div>
+                      <div class="gap-2 hstack">
+                        <div class="small">0.000015 XRP</div>
+                        <div class="badge text-bg-success" style="width: auto">
+                          Low
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        class="btn btn-sm btn-secondary"
+                        data-bs-dismiss="modal"
+                        id="proper-reject-payment"
+                      >
+                        Decline
+                      </button>
+                      <button
+                        class="btn btn-sm btn-primary"
+                        id="acceptPayment"
+                        data-bs-dismiss="modal"
+                      >
+                        Accept
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- acceptRequestModal -->
+              <div
+                class="modal fade"
+                id="acceptRequestModal"
+                data-bs-keyboard="false"
+                tabindex="-1"
+                aria-labelledby="acceptRequestModalLabel"
+                aria-hidden="true"
+              >
+                <div
+                  class="modal-dialog modal-dialog-centered modal-alert"
+                  style="margin-top: -20px"
+                >
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button
+                        class="btn btn-sm btn-dark invisible"
+                        data-bs-dismiss="modal"
+                        id="signRequestModalBtnClose"
+                        type="button"
+                      >
+                        Close
+                      </button>
+                      <span>Scan with Xumm</span>
+                      <button
+                        class="btn btn-sm btn-dark"
+                        data-bs-dismiss="modal"
+                        id="signRequestModalBtnInvoke"
+                        type="button"
+                      >
+                        Decline
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="text-center">
+                        <img
+                          class="mx-auto rounded d-block"
+                          id="qr_code"
+                          width="250"
+                          height="250"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div class="text-center" id="scan-status">
+                        Push notification sent.
+                      </div>
+                    </div>
+                    <div
+                      class="modal-footer small text-break text-start d-flex justify-content-start mockMessage"
+                    >
+                      * This is development flow only.<br />Normally this would
+                      be signed straight on the device.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Scan Modal -->
+              <div
+                class="modal fade"
+                id="scanModal"
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
+                tabindex="-1"
+                aria-labelledby="scanModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-dialog-css">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                        Enter QR Content
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      <textarea
+                        autofocus
+                        class="form-control"
+                        id="qr-content-input"
+                        cols="8"
+                        rows="3"
+                        placeholder="Enter qr content."
+                      ></textarea>
+                      <div
+                        class="mt-3 small text-break text-start d-flex justify-content-start mockMessage"
+                      >
+                        * This is development flow only.<br />Normally this
+                        would be scanned straight on the device.
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-secondary"
+                        data-bs-dismiss="modal"
+                        id="qr-content-close"
+                      >
+                        Close
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-primary"
+                        data-bs-dismiss="modal"
+                        id="qr-content-submit"
+                      >
+                        Enter
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Destination Picker -->
+              <div
+                class="modal fade"
+                id="selectDestinationModal"
+                data-bs-backdrop="false"
+                data-bs-keyboard="true"
+                tabindex="-1"
+                aria-labelledby="selectDestinationLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-fullscreen modal-css">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <div class="text-center mt-3">
+                        <span class="h5">Destination</span>
+                      </div>
+                      <br />
+
+                      <div class="text-center">
+                        <div class="input-group mb-3">
+                          <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Enter an raddress."
+                            aria-label="Enter an raddress."
+                            aria-describedby="Enter an raddress."
+                            id="destination-raddress"
+                            autofocus
+                          />
+                          <span class="input-group-text"
+                            ><i class="bi bi-fullscreen"></i
+                          ></span>
+                        </div>
+                      </div>
+                      <br />
+                      My accounts
+                      <div class="text-center vstack gap-1">
+                        <div class="gap-2 hstack badge text-bg-light">
+                          <img
+                            class="card-img-top"
+                            width="32"
+                            height="32"
+                            loading="lazy"
+                          />
+                          <div class="gap-1 mt-1 vstack">
+                            <span
+                              class="small fw-normal text-start placeholder col-7"
+                            ></span>
+                          </div>
+                        </div>
+
+                        <div class="gap-2 hstack badge text-bg-light">
+                          <img
+                            class="card-img-top"
+                            width="32"
+                            height="32"
+                            loading="lazy"
+                          />
+                          <div class="gap-1 mt-1 vstack">
+                            <span
+                              class="small fw-normal text-start placeholder col-7"
+                            ></span>
+                          </div>
+                        </div>
+                      </div>
+                      <br />
+                      Contacts
+                      <div class="text-center vstack gap-1">
+                        <div class="gap-2 hstack badge text-bg-light">
+                          <img
+                            class="card-img-top"
+                            width="32"
+                            height="32"
+                            loading="lazy"
+                          />
+                          <div class="gap-1 mt-1 vstack">
+                            <span
+                              class="small fw-normal text-start placeholder col-7"
+                            ></span>
+                          </div>
+                        </div>
+
+                        <div class="gap-2 hstack badge text-bg-light">
+                          <img
+                            class="card-img-top"
+                            width="32"
+                            height="32"
+                            loading="lazy"
+                          />
+                          <div class="gap-1 mt-1 vstack">
+                            <span
+                              class="small fw-normal text-start placeholder col-7"
+                            ></span>
+                          </div>
+                        </div>
+                        <div
+                          class="small text-break text-start d-flex justify-content-start mockMessage mt-5 m-2"
+                        >
+                          This is just a mock screen. It might differ from the
+                          actual content and design present inside Xumm.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-light"
+                        id="closeAddressSelection"
+                        data-bs-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                      <button
+                        class="btn btn-sm btn-primary"
+                        id="acceptAddressSelection"
+                        data-bs-dismiss="modal"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Next -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button
+      data-bs-toggle="modal"
+      data-toggle="modal"
+      data-bs-target="#openShareModal"
+      id="openShareBtn"
+      class="invisible"
+    >
+      Share
+    </button>
+    <!-- <a
+      data-dismiss="modal"
+      data-toggle="modal"
+      href="#openShareModal"
+      id="openShareBtn"
+      class="invisible"
+      >Share</a
+    > -->
+
+    <button
+      type="button"
+      id="openDialogBtn"
+      class="btn btn-primary invisible"
+      data-bs-toggle="modal"
+      data-bs-target="#dialogModal"
+    >
+      Dialog
+    </button>
+
+    <button
+      data-bs-toggle="modal"
+      data-bs-target="#paymentModal"
+      id="paymentBtn"
+      class="invisible"
+    >
+      P
+    </button>
+
+    <button
+      data-bs-toggle="modal"
+      data-bs-target="#signRequestModal"
+      id="openSignRequestBtn"
+      class="invisible"
+    >
+      SR
+    </button>
+
+    <button
+      data-bs-toggle="modal"
+      data-bs-target="#acceptRequestModal"
+      id="acceptRequestBtn"
+      class="invisible"
+    >
+      A
+    </button>
+
+    <button
+      data-bs-toggle="modal"
+      data-bs-target="#selectDestinationModal"
+      id="selectDestinationBtn"
+      class="invisible"
+    >
+      DM
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-primary invisible"
+      data-bs-toggle="modal"
+      data-bs-target="#scanModal"
+      id="scanModalbtn"
+    >
+      Scan
+    </button>
+  </body>
+</html>

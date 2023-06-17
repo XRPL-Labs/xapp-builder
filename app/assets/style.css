@@ -1,0 +1,217 @@
+html,
+body {
+  font-family: proxima-nova, Verdana, Helvetica, Geneva, Tahoma, sans-serif;
+  background-color: transparent;
+  overflow-x: hidden !important;
+}
+
+.invisible {
+  display: none;
+}
+
+.canNotLaunch {
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
+}
+
+.canNotLaunch:hover {
+  filter: none;
+  -webkit-filter: grayscale(0);
+}
+
+.noDecoration {
+  text-decoration: none;
+  color: #3051fc;
+}
+
+.pointing {
+  cursor: pointer;
+}
+
+.modal-alert {
+  max-width: 290px;
+  max-height: 330px;
+  position: fixed;
+  top: 70px;
+  left: 345px;
+}
+
+#transactionId,
+#toAddress,
+#fromAddress,
+#transactionId {
+  font-size: x-small;
+}
+
+#transactionFee,
+#transactionFinal {
+  font-size: small;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.xummBgColor {
+  color: #0000ae;
+}
+
+.bigSpace {
+  margin: 1px;
+  font-size: medium;
+  word-spacing: 0.3em;
+}
+
+#frame-img {
+  width: 700px;
+  height: 690px;
+  position: relative;
+  top: 8px;
+  left: -150px;
+  z-index: 9998;
+  /* background-color: transparent !important; */
+}
+
+#frame-div {
+  width: 291px;
+  height: 622px;
+  position: relative;
+  top: -649px;
+  left: 46px;
+  border-radius: 32px;
+  background-color: transparent !important;
+}
+
+.mainWindow {
+  width: 291px;
+  height: 559px;
+  word-wrap: break-word;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  z-index: 4;
+  overflow: hidden !important;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.mainWindow::-webkit-scrollbar {
+  display: none !important;
+}
+
+.modal-css {
+  max-width: 291px;
+  height: 621px;
+  word-wrap: break-word;
+  position: relative;
+  top: 105px;
+  left: 342px;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.modal-dialog-css {
+  width: 275px;
+  height: 300px;
+  word-wrap: break-word;
+  overflow-x: hidden;
+  position: fixed;
+  top: 220px;
+  left: 348px;
+  z-index: 9999;
+}
+
+.card,
+.list-group-item {
+  border: 0px;
+  background-color: #f8f9fa;
+}
+
+li:hover {
+  background-color: #ffffff !important;
+}
+
+#xapp-list {
+  border-radius: 0px !important;
+}
+
+hr {
+  border-style: solid;
+  border-top: thin ridge gray;
+}
+
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  pointer-events: none;
+}
+
+#sidebar {
+  width: 280px !important;
+  height: 775px;
+  min-width: 280px;
+  background-color: #f8f9fa;
+  z-index: 10000;
+  -webkit-app-region: drag;
+  overflow-y: scroll;
+}
+#title {
+  -webkit-app-region: drag;
+}
+
+#selection-refresh-div,
+#webview-reload,
+#title {
+  z-index: 10000 !important;
+}
+
+#sidebar a,
+#sidebar li,
+#uuid {
+  -webkit-app-region: no-drag;
+}
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+#phone-frame {
+  width: 370px !important;
+  min-width: 370px;
+  height: 775px;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.mockMessage {
+  font-size: x-small;
+  background-color: #fffbf4;
+}
+
+.defaultBGColor {
+  background-color: #f8f9fa !important;
+}
+
+.activeBGColor {
+  background-color: #ffffff !important;
+}
+
+.titleImort {
+  position: relative;
+  top: 30px;
+  font-weight: bold;
+  cursor: grab;
+  cursor: -webkit-grab;
+}
+
+.truncate {
+  width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

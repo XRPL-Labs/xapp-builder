@@ -1,0 +1,70 @@
+{
+  "name": "xapp-builder",
+  "productName": "xAppBuilder",
+  "description": "Build & debug your xApps for Xumm.",
+  "main": "main.js",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "electron .",
+    "watch": "nodemon --exec electron .",
+    "build": "electron-builder -m",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.xrpllabs.xappbuilder",
+    "copyright": "XRPL Labs",
+    "buildVersion": "2",
+    "mac": {
+      "artifactName": "${name}-mac-${arch}-${version}.${ext}",
+      "electronLanguages": [
+        "en"
+      ],
+      "extendInfo": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "electronTeamId": "LK5BBJNJZ6"
+      },
+      "bundleVersion": "29",
+      "provisioningProfile": "xAppBuilder_New_Distribution.provisionprofile",
+      "entitlements": "entitlement/entitlements.mac.plist",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "asarUnpack": "**/*.node",
+      "target": [
+        {
+          "target": "mas",
+          "arch": "universal"
+        }
+      ]
+    },
+    "mas": {
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon.icns",
+      "provisioningProfile": "xAppBuilder_New_Distribution.provisionprofile",
+      "entitlements": "entitlement/entitlements.mas.plist",
+      "entitlementsInherit": "entitlement/entitlements.mas.inherit.plist",
+      "entitlementsLoginHelper": "entitlement/entitlements.mas.loginhelper.plist",
+      "hardenedRuntime": false
+    }
+  },
+  "keywords": [
+    "xapp",
+    "builder",
+    "debugger",
+    "Xumm",
+    "XRPL"
+  ],
+  "author": "XRPL Labs",
+  "license": "MIT",
+  "repository": "https://github.com/XRPL-Labs/xapp-builder",
+  "homepage": "https://github.com/XRPL-Labs/xapp-builder",
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "qrcode": "^1.5.1",
+    "xrpl-txdata": "^1.2.1"
+  },
+  "devDependencies": {
+    "electron": "^24.4.0",
+    "electron-builder": "^23.6.0",
+    "nodemon": "^2.0.21"
+  }
+}
