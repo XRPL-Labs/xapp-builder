@@ -134,7 +134,7 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
   }
 
   webview.src = data.url;
-  webview.setUserAgent("xumm/xapp");
+  //webview.setUserAgent("xumm/xapp");
 });
 
 const webviewIsLoading = () => {
