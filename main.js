@@ -178,8 +178,11 @@ ipcMain.on("devTool-open", (e, args) => {
 });
 
 const selectConsole = () => {
+  // Get app directory
+  // on OSX it's /Users/Yourname/Library/Application Support/AppName
   try {
     const userDataPath = app.getPath("userData");
+    console.log("userDataPath ", userDataPath);
     const prefPath = path.join(userDataPath, "Preferences");
     const prefs = JSON.parse(fs.readFileSync(prefPath, "utf-8"));
 

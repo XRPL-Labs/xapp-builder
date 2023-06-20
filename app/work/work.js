@@ -598,6 +598,26 @@ const renderCard = (event) => {
   }
 
   if (event.length === 0) {
+    console.log(
+      "%cPlease create an xApp account first, if you have not already: https://apps.xumm.dev -> xApp.\n",
+      "color: red; font-weight: bold"
+    );
+    console.log(
+      "%c------------------------------------------------------------------------------\n",
+      "color: black; font-weight: bold"
+    );
+    console.log(
+      "%cIf you already have an xApp, but it's not showing up in xAppBuilder:",
+      "color: red; font-weight: bold"
+    );
+    console.log(
+      "%cPlease log into Xumm Developer Console account(https://apps.xumm.dev). Navigate to the xApp section, and add your Device ID(open Xumm -> Settings -> Advance -> Device ID) to 'Debug Device ID' field -> Save. Once done, click on 'Refetch' button in xAppBuilder(top left corner).",
+      "color: red;"
+    );
+    console.log(
+      "%c------------------------------------------------------------------------------\n",
+      "color: black; font-weight: bold"
+    );
     const li1 = document.createElement("li");
     li1.classList.add("text-bg-light");
     li1.classList.add("defaultBGColor");
