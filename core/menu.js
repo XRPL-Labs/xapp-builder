@@ -8,28 +8,36 @@ module.exports = () => {
       role: "help",
       submenu: [
         {
-          label: "Learn more",
-          click: () => {
-            shell.openExternal("https://help.xumm.app/");
-          },
-        },
-        {
           label: "What are xApps?",
           click: () => {
             shell.openExternal("https://xumm.readme.io/docs/what-are-xapps");
           },
         },
         {
-          label: "Create xApps?",
+          label: "Create xApp account",
           click: () => {
             shell.openExternal("https://apps.xumm.dev/");
           },
         },
         {
-          label: "Build xApps(dapps)?",
+          label: "Build xApps(dapps)",
           click: () => {
             shell.openExternal(
               "https://docs.xumm.dev/environments/xapps-dapps"
+            );
+          },
+        },
+        {
+          label: "xAppBuilder: Video Demo",
+          click: () => {
+            shell.openExternal("https://www.youtube.com/watch?v=aKey9GCx_EA");
+          },
+        },
+        {
+          label: "localhost to xAppBuilder",
+          click: () => {
+            shell.openExternal(
+              "https://markdowneditor.online/editor/6496a8380eb6fc72aab90ff9"
             );
           },
         },

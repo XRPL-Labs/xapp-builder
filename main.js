@@ -182,7 +182,7 @@ const selectConsole = () => {
   // on OSX it's /Users/Yourname/Library/Application Support/AppName
   try {
     const userDataPath = app.getPath("userData");
-    console.log("userDataPath ", userDataPath);
+    //console.log("userDataPath ", userDataPath);
     const prefPath = path.join(userDataPath, "Preferences");
     const prefs = JSON.parse(fs.readFileSync(prefPath, "utf-8"));
 

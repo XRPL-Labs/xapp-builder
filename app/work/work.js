@@ -104,7 +104,8 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
     "color: #FF5B5B; font-weight: bold;"
   );
   document.getElementById("title").innerHTML = appTitle;
-  document.getElementById("appName").innerHTML = appTitle;
+  document.getElementById("appName").innerHTML =
+    appTitle.length > 19 ? appTitle.substring(0, 19) + "..." : appTitle;
   const xAppHeader = document.getElementById("xapp-header").classList;
   if (xAppHeader.contains("fade")) {
     xAppHeader.remove("fade");
@@ -134,7 +135,15 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
   }
 
   webview.src = data.url;
-  //webview.setUserAgent("xumm/xapp");
+  webview.setUserAgent("xumm/xapp");
+  if (navigator.userAgent.indexOf("xumm/xapp") === -1) {
+    Object.defineProperty(navigator, "userAgent", {
+      value: `xumm/xapp:2.5.0 (ott:${activeOtt})`,
+    });
+    Object.defineProperty(navigator, "appVersion", {
+      value: `xumm/xapp:2.5.0 (ott:${activeOtt})`,
+    });
+  }
 });
 
 const webviewIsLoading = () => {
@@ -348,11 +357,20 @@ window.xAppBuilder.receive("from-main", async (args) => {
     window.xAppBuilder.send("getActiveApp");
     window.xAppBuilder.receive("getActiveApp", (res) => {
       const xapp = JSON.parse(res);
-      appName = xapp.name;
+      appName =
+        xapp.name.length > 19 ? xapp.name.substring(0, 19) + "..." : xapp.name;
       appIcon = xapp.icon;
       document.getElementById("app-name").innerHTML = appName;
       document.getElementById("dialog-image").src = appIcon;
-      document.getElementById("external-url").innerHTML = args.url;
+      if (args.url.length > 48) {
+        document.getElementById(
+          "external-url"
+        ).innerHTML = `<pre>${args.url}</pre>`;
+        //args.url.substring(0, 45) + "...";
+      } else {
+        document.getElementById("external-url").innerHTML = args.url;
+      }
+
       document.getElementById("openDialogBtn").click();
     });
 
