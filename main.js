@@ -44,7 +44,7 @@ const workRendererFunction = () => {
     minWidth: 350,
     minHeight: 500,
     frame: false,
-    icon: `${__dirname}/app/assets/images/logo.png`,
+    icon: path.join(__dirname, "./app/assets/images/logo.png"),
     show: false,
     titleBarStyle: "customButtonsOnHover",
     webPreferences: {
@@ -56,6 +56,7 @@ const workRendererFunction = () => {
       preload: path.join(__dirname, "./app/preload.js"),
     },
   };
+
   appMenu();
   workRenderer = new BrowserWindow(rendererOptions);
 
@@ -174,7 +175,11 @@ ipcMain.on("logout", (e, args) => {
 });
 
 ipcMain.on("devTool-open", (e, args) => {
-  workRenderer.webContents.openDevTools();
+  if (process.platform === "darwin") {
+    workRenderer.webContents.openDevTools();
+  } else {
+    workRenderer.close();
+  }
 });
 
 const selectConsole = () => {
@@ -182,31 +187,32 @@ const selectConsole = () => {
   // on OSX it's /Users/Yourname/Library/Application Support/AppName
   try {
     const userDataPath = app.getPath("userData");
-    //console.log("userDataPath ", userDataPath);
     const prefPath = path.join(userDataPath, "Preferences");
-    const prefs = JSON.parse(fs.readFileSync(prefPath, "utf-8"));
+    if (fs.existsSync(prefPath)) {
+      const prefs = JSON.parse(fs.readFileSync(prefPath, "utf-8"));
 
-    if (
-      prefs.electron.devtools.preferences["panel-selectedTab"] !==
-      JSON.stringify("console")
-    ) {
-      const bounds = getWindowSettings();
-      if (bounds[0] === 1360 && bounds[1] === 780) {
+      if (
+        prefs.electron.devtools.preferences["panel-selectedTab"] !==
+        JSON.stringify("console")
+      ) {
+        const bounds = getWindowSettings();
+        if (bounds[0] === 1360 && bounds[1] === 780) {
+          prefs.electron.devtools = {
+            preferences: {
+              "InspectorView.splitViewState": JSON.stringify({
+                vertical: { size: 660 },
+              }),
+            },
+          };
+        }
+
         prefs.electron.devtools = {
           preferences: {
-            "InspectorView.splitViewState": JSON.stringify({
-              vertical: { size: 660 },
-            }),
+            "panel-selectedTab": JSON.stringify("console"),
           },
         };
+        fs.writeFileSync(prefPath, JSON.stringify(prefs));
       }
-
-      prefs.electron.devtools = {
-        preferences: {
-          "panel-selectedTab": JSON.stringify("console"),
-        },
-      };
-      fs.writeFileSync(prefPath, JSON.stringify(prefs));
     }
   } catch (err) {
     console.log("err ", err);

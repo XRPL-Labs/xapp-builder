@@ -364,13 +364,13 @@ window.xAppBuilder.receive("from-main", async (args) => {
       document.getElementById("dialog-image").src = appIcon;
       if (args.url.length > 48) {
         document.getElementById(
-          "external-url"
+          "display-external-url"
         ).innerHTML = `<pre>${args.url}</pre>`;
-        //args.url.substring(0, 45) + "...";
       } else {
-        document.getElementById("external-url").innerHTML = args.url;
+        document.getElementById("display-external-url").innerHTML = args.url;
       }
 
+      document.getElementById("external-url").innerHTML = args.url;
       document.getElementById("openDialogBtn").click();
     });
 
@@ -481,8 +481,9 @@ window.xAppBuilder.receive("from-main", async (args) => {
 });
 
 document.getElementById("open-external-link").addEventListener("click", (e) => {
-  if (document.getElementById("external-url").innerHTML !== "") {
-    openExternal(document.getElementById("external-url").innerHTML);
+  const linkToOpen = document.getElementById("external-url").innerHTML;
+  if (linkToOpen !== "") {
+    openExternal(linkToOpen);
   }
 });
 const openExternal = (url) => {

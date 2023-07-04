@@ -14,6 +14,24 @@
     "appId": "com.xrpllabs.xappbuilder",
     "copyright": "XRPL Labs",
     "buildVersion": "2",
+    "win": {
+      "target": [
+        "appx"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "appx": {
+      "identityName": "XRPLLabs.xAppBuilder",
+      "publisher": "CN=FC6EAEF1-08A6-4821-82F2-FE6531CD946E",
+      "publisherDisplayName": "XRPL Labs",
+      "displayName": "xAppBuilder"
+    },
+    "linux": {
+      "target": [
+        "snap"
+      ],
+      "icon": "build/icon.png"
+    },
     "mac": {
       "artifactName": "${name}-mac-${arch}-${version}.${ext}",
       "electronLanguages": [
@@ -23,7 +41,7 @@
         "ITSAppUsesNonExemptEncryption": false,
         "electronTeamId": "LK5BBJNJZ6"
       },
-      "bundleVersion": "33",
+      "bundleVersion": "34",
       "provisioningProfile": "xAppBuilder_New_Distribution.provisionprofile",
       "entitlements": "entitlement/entitlements.mac.plist",
       "hardenedRuntime": true,

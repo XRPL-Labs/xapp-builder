@@ -450,7 +450,19 @@
                       <div class="small">
                         '<span id="app-name"></span>' xApp wants to open this
                         URL:<br /><br />
-                        <div id="external-url" style="font-size: x-small"></div>
+                        <div
+                          id="display-external-url"
+                          style="font-size: x-small"
+                        ></div>
+                        <div
+                          id="external-url"
+                          style="
+                            font-size: x-small;
+                            width: 0;
+                            height: 0;
+                            display: none;
+                          "
+                        ></div>
                       </div>
                     </div>
                     <div class="modal-footer">
