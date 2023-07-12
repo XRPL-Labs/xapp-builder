@@ -41,7 +41,7 @@
         "ITSAppUsesNonExemptEncryption": false,
         "electronTeamId": "LK5BBJNJZ6"
       },
-      "bundleVersion": "34",
+      "bundleVersion": "35",
       "provisioningProfile": "xAppBuilder_New_Distribution.provisionprofile",
       "entitlements": "entitlement/entitlements.mac.plist",
       "hardenedRuntime": true,
