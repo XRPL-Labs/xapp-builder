@@ -28,16 +28,26 @@ module.exports = () => {
           },
         },
         {
-          label: "xAppBuilder: Video Demo",
+          label: "About xAppBuilder",
           click: () => {
-            shell.openExternal("https://www.youtube.com/watch?v=aKey9GCx_EA");
+            shell.openExternal(
+              "https://docs.xumm.dev/environments/xapps-dapps/xappbuilder"
+            );
+          },
+        },
+        {
+          label: "xAppBuilder FAQ",
+          click: () => {
+            shell.openExternal(
+              "https://docs.xumm.dev/environments/xapps-dapps/xappbuilder/xappbuilder-faq"
+            );
           },
         },
         {
           label: "localhost to xAppBuilder",
           click: () => {
             shell.openExternal(
-              "https://markdowneditor.online/editor/6496a8380eb6fc72aab90ff9"
+              "https://docs.xumm.dev/environments/xapps-dapps/xappbuilder/connecting-localhost-to-xappbuilder"
             );
           },
         },

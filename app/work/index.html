@@ -62,6 +62,7 @@
                     class="noDecoration small text-secondary clickable"
                     onclick="loadCard(true)"
                     title="Refetch"
+                    id="refetch"
                   >
                     Refetch
                   </a>
@@ -83,17 +84,31 @@
                   width="150"
                   height="150"
                   style="border: 0px"
-                  class="img-fluid img-thumbnail"
+                  class="img-fluid img-thumbnail clickable"
                   loading="lazy"
                   src="../assets/images/loading.gif"
                 />
-                <div class="text-center mt-2">
+                <div
+                  class="text-center mt-2 vstack gap-1"
+                  style="text-align: center"
+                >
                   <a
                     href="#"
                     class="noDecoration small clickable"
                     onclick="openExternal(`https://xumm.app/`)"
                     >Scan above QR code using Xumm.
                   </a>
+                  <div>- or -</div>
+                  <div>
+                    <a
+                      href="#"
+                      class="btn btn-sm btn-primary"
+                      onclick="Demo()"
+                      style="width: 180px"
+                    >
+                      Demo with Example apps
+                    </a>
+                  </div>
                 </div>
               </div>
               <ul class="list-group invisible" id="xapp-list"></ul>
@@ -146,7 +161,7 @@
             <div class="bg-transparent" id="frame-div">
               <div class="vstack">
                 <div class="mt-4 row ms-1 me-1" id="xapp-header">
-                  <div class="col fw-bold mt-2 fs-7" id="appName">App Name</div>
+                  <div class="col fw-bold mt-3 fs-7" id="appName">App Name</div>
                   <div class="col-auto mt-2">
                     <button
                       class="btn btn-dark btn-sm rounded-4"

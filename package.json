@@ -1,9 +1,9 @@
 {
   "name": "xapp-builder",
   "productName": "xAppBuilder",
-  "description": "Build & debug your xApps for Xumm.",
+  "description": "Build and debug your xApps for Xumm.",
   "main": "main.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "start": "electron .",
     "watch": "nodemon --exec electron .",
@@ -13,7 +13,7 @@
   "build": {
     "appId": "com.xrpllabs.xappbuilder",
     "copyright": "XRPL Labs",
-    "buildVersion": "2",
+    "buildVersion": "3",
     "win": {
       "target": [
         "appx"
@@ -28,7 +28,14 @@
     },
     "linux": {
       "target": [
-        "snap"
+        {
+          "target": "snap",
+          "arch": [
+            "x64",
+            "armv7l",
+            "arm64"
+          ]
+        }
       ],
       "icon": "build/icon.png"
     },
@@ -41,8 +48,8 @@
         "ITSAppUsesNonExemptEncryption": false,
         "electronTeamId": "LK5BBJNJZ6"
       },
-      "bundleVersion": "35",
-      "provisioningProfile": "xAppBuilder_New_Distribution.provisionprofile",
+      "bundleVersion": "40",
+      "provisioningProfile": "xAppBuilder.provisionprofile",
       "entitlements": "entitlement/entitlements.mac.plist",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
@@ -57,7 +64,7 @@
     "mas": {
       "category": "public.app-category.developer-tools",
       "icon": "build/icon.icns",
-      "provisioningProfile": "xAppBuilder_New_Distribution.provisionprofile",
+      "provisioningProfile": "xAppBuilder.provisionprofile",
       "entitlements": "entitlement/entitlements.mas.plist",
       "entitlementsInherit": "entitlement/entitlements.mas.inherit.plist",
       "entitlementsLoginHelper": "entitlement/entitlements.mas.loginhelper.plist",

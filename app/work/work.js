@@ -12,6 +12,25 @@ let Sdk,
   webviewLoading = false,
   previousSpace = 0;
 
+const demoApps = [
+  {
+    uuid: "todo",
+    name: "Todo List xApp",
+    description: "The Best Productivity Tool.",
+    icon: "../assets/images/sample-xapps/todo.png",
+    canLaunch: true,
+    active: false,
+  },
+  {
+    uuid: "survey",
+    name: "Survey xApp",
+    description: "Sample Survey xApp",
+    icon: "../assets/images/sample-xapps/survey.png",
+    canLaunch: true,
+    active: false,
+  },
+];
+
 const webview = document.querySelector("webview");
 
 const loadxApp = () => {
@@ -28,11 +47,8 @@ window.xAppBuilder.receive("active-xapp", (args) => {
       xAppHeader.add("fade");
     }
 
-    // console.log(
-    //   "%cJWT expired. Please scan the QR code & import your xApps.",
-    //   "color: red; font-weight: bold"
-    // );
-    // xAppImporter();
+    removeAddressBar();
+
     return;
   }
   const data = JSON.parse(args);
@@ -46,10 +62,31 @@ window.xAppBuilder.receive("active-xapp", (args) => {
       "%cJWT expired. Please scan the QR code & import your xApps.",
       "color: red; font-weight: bold"
     );
+    removeAddressBar();
     xAppImporter();
     return;
   }
+
+  if (data.length === 0) {
+    removeAddressBar();
+    console.log(
+      `%cSelect different xApp from the left sidebar.`,
+      "color: gray; font-weight: bold"
+    );
+    console.log(
+      "%cPlease remember to open the xApp inside Xumm to re-activate the session.",
+      "color: red; font-weight: bold"
+    );
+    console.log(
+      "%cNote: After opening xApp in Xumm, click on 'Refetch' link in the top left corner of xAppBuilder.",
+      "color: red; font-weight: bold"
+    );
+
+    return;
+  }
+
   let addressPresent = false;
+
   data.map((app) => {
     const option = document.createElement("option");
     if (app.account === selectedAccount) {
@@ -75,6 +112,13 @@ window.xAppBuilder.receive("active-xapp", (args) => {
     document.getElementById("raddresses").value = activeOtt;
   }
 
+  const selectionRefresh = document.getElementById(
+    "selection-refresh-div"
+  ).classList;
+  if (selectionRefresh.contains("fade") && selectedAccount !== undefined) {
+    selectionRefresh.remove("fade");
+  }
+
   window.xAppBuilder.send("get-active-xapp", {
     app: activeApp,
     ott: activeOtt,
@@ -89,7 +133,7 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
     if (!xAppHeader.contains("fade")) {
       xAppHeader.add("fade");
     }
-
+    window.xAppBuilder.send("logout"); // just added at the last moment to see if the active app selection can be removed.
     console.log(
       "%cJWT expired. Please scan the QR code & import your xApps.",
       "color: red; font-weight: bold"
@@ -100,7 +144,7 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
 
   console.clear();
   console.log(
-    `%c Please wait until the selected xApp loads.`,
+    `%cPlease wait until the selected xApp loads.`,
     "color: #FF5B5B; font-weight: bold;"
   );
   document.getElementById("title").innerHTML = appTitle;
@@ -117,6 +161,7 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
   console.log(`%c AppUrl: ${data.url.split("/force")[0]}`, "color: #3BDC96;");
   console.log(`%c DeviceId: ${data.device}`, "color: #3BDC96;");
   console.log(`%c Context: ${selectedAccount}`, "color: #3BDC96;");
+
   // console.log(
   //   `%c OTT Expires: ${getRelativeTimeString(
   //     new Date(ottExpires),
@@ -565,8 +610,16 @@ window.addEventListener("offline", () =>
 // xApp list module
 
 const loadCard = (forceLoad) => {
+  let refetch = document.getElementById("refetch").innerHTML;
+  if (refetch.trim() !== "Refetch") {
+    refetch = "Refetch";
+  }
   if (forceLoad) {
-    console.log(`%cRe-fetched the xApp list`, "color: #3BDC96;");
+    if (selectedAccount === undefined) {
+      console.log(`%cFetched the xApp list`, "color: #3BDC96;");
+    } else {
+      console.log(`%cRe-fetched the xApp list`, "color: #3BDC96;");
+    }
   }
   window.xAppBuilder.send("load-all-xapps", forceLoad);
 };
@@ -602,9 +655,6 @@ const renderCard = (event) => {
 
   const loggedOut = document.getElementById("logged-out").classList;
   const loggedIn = document.getElementById("logged-in").classList;
-  const selectionRefresh = document.getElementById(
-    "selection-refresh-div"
-  ).classList;
   if (!loggedOut.contains("invisible")) {
     loggedOut.add("invisible");
   }
@@ -612,7 +662,10 @@ const renderCard = (event) => {
     loggedIn.remove("invisible");
   }
 
-  if (selectionRefresh.contains("fade")) {
+  const selectionRefresh = document.getElementById(
+    "selection-refresh-div"
+  ).classList;
+  if (selectionRefresh.contains("fade") && selectedAccount !== undefined) {
     selectionRefresh.remove("fade");
   }
 
@@ -659,12 +712,6 @@ const renderCard = (event) => {
       const li = document.createElement("li");
       li.classList.add("text-bg-light");
       li.classList.add("pointing");
-      if (activeApp === list.uuid) {
-        li.classList.add("activeBGColor");
-        appTitle = list.name;
-      } else {
-        li.classList.add("defaultBGColor");
-      }
 
       if (!list.canLaunch) {
         li.classList.add("text-muted");
@@ -692,6 +739,19 @@ const renderCard = (event) => {
       }</small></div>`;
       li.innerHTML = content;
       xappList.appendChild(li);
+
+      // moved to end as it auto launches last selected xApp, and the dom has to be rendered before invoking it.
+      // added && list.canLaunch - to avoid launching inactive apps(avoids blocking of login.)
+      if (activeApp === list.uuid && list.canLaunch) {
+        li.classList.add("activeBGColor");
+        appTitle = list.name;
+
+        setTimeout(() => {
+          openApp(list.uuid, list.canLaunch, list.xapp, list.icon, list.name);
+        }, 1000);
+      } else {
+        li.classList.add("defaultBGColor");
+      }
     });
     window.xAppBuilder.send("TouchBarReInit");
   }
@@ -713,16 +773,20 @@ const openApp = (uuid, canLaunch, xapp, icon, name) => {
   if (!canLaunch) {
     console.log(
       "%c" +
-        `You'll have to open the xApp(${xapp}) in your phone at least once, before trying to open it in the xApp Builder.`,
+        `You'll have to open the xApp(${xapp}) in your phone at least once, before trying to open it in the xAppBuilder.`,
       "font-size: 15px; font-weight: bold"
     );
     console.log(
       "%c" +
-        "Steps: Open the xApp in Xumm at least once. And then click on the 'Refetch' button on this page.",
+        "Instruction: Open the xApp(link below) in Xumm now. And then click on the 'Refetch' button on this page(top left corner).",
       "font-size: 15px; font-weight: normal"
     );
+    console.log("\n");
+    console.log(`https://xumm.app/detect/xapp:${xapp}`);
     window.xAppBuilder.send("title", "Workspace");
-    webview.src = "../splashscreen.html";
+    if (!webview.src.includes("/splashscreen.html")) {
+      webview.src = "../splashscreen.html";
+    }
   } else {
     const xappList = document.getElementById("xapp-list");
     for (var i = 0; i < xappList.childNodes.length; i++) {
@@ -755,6 +819,7 @@ const openApp = (uuid, canLaunch, xapp, icon, name) => {
 // xApps import module
 const xAppImporter = () => {
   cancelModal();
+  removeAppHeader();
   window.xAppBuilder.send("title", "Import xApps");
 
   const title = document.getElementById("title").classList;
@@ -810,6 +875,12 @@ const xAppImporter = () => {
 
 // Logout - clear storage
 const Logout = () => {
+  // During demo, the 'Refetch' button in made invisible. Lets re-enable it here.
+  const refetch = document.getElementById("refetch");
+  if (refetch.classList.contains("invisible")) {
+    refetch.classList.remove("invisible");
+  }
+
   console.clear();
   console.log(
     "%cLogged out. Storage cleared.",
@@ -822,6 +893,7 @@ const Logout = () => {
   }
   window.xAppBuilder.send("title", "Workspace");
   document.getElementById("title").innerHTML = "Workspace";
+  removeAppHeader();
   if (!webview.src.includes("/splashscreen.html")) {
     webview.src = "../splashscreen.html";
   }
@@ -853,7 +925,147 @@ const xAppClose = () => {
   }
   console.log(`%cClosing the xApp.`, "color: #3BDC96;");
   window.xAppBuilder.send("title", "Workspace");
-  webview.src = "../splashscreen.html";
+  if (!webview.src.includes("/splashscreen.html")) {
+    webview.src = "../splashscreen.html";
+  }
+};
+
+const Demo = () => {
+  const refetch = document.getElementById("refetch");
+  if (!refetch.classList.contains("invisible")) {
+    refetch.classList.add("invisible");
+  }
+
+  const xappList = document.getElementById("xapp-list");
+  xappList.innerHTML = "";
+
+  if (xappList.classList.contains("invisible")) {
+    xappList.classList.remove("invisible");
+  }
+  const importer = document.getElementById("importer").classList;
+  if (!importer.contains("invisible")) {
+    importer.add("invisible");
+  }
+
+  const loggedOut = document.getElementById("logged-out").classList;
+  const loggedIn = document.getElementById("logged-in").classList;
+  if (!loggedOut.contains("invisible")) {
+    loggedOut.add("invisible");
+  }
+  if (loggedIn.contains("invisible")) {
+    loggedIn.remove("invisible");
+  }
+
+  demoApps.map((list) => {
+    const li = document.createElement("li");
+    li.classList.add("text-bg-light");
+    li.classList.add("pointing");
+
+    li.addEventListener("click", () => {
+      SamplexApp(list.uuid);
+    });
+    li.classList.add("list-group-item");
+    li.classList.add("hstack");
+    li.classList.add("gap-2");
+    li.setAttribute("id", list.uuid);
+    li.setAttribute("title", list.description);
+
+    const content = `<img src="${
+      list.icon
+    }" width="50" height="50" class="img-thumbnail ms-2" alt="${
+      list.name
+    }"  /> <div class="mt-1">${
+      list.canLaunch ? `<strong>${list.name}</strong>` : list.name
+    } <br /><small style="font-size: small;">${
+      list.description.length > 30
+        ? list.description.substring(0, 29) + ".."
+        : list.description
+    }</small></div>`;
+    li.innerHTML = content;
+    xappList.appendChild(li);
+
+    if (list.active === true) {
+      li.classList.add("activeBGColor");
+      appTitle = list.name;
+      SamplexApp(list.uuid);
+    } else {
+      li.classList.add("defaultBGColor");
+    }
+  });
+};
+
+const SamplexApp = (example) => {
+  if (
+    webview.src !== "https://xapp-sample-todolist.xappscdn.com/" &&
+    example === "todo"
+  ) {
+    console.clear();
+
+    console.log(`%cLoading Sample Todo List xApp ..`, "font-weight: bold");
+    webview.src = "https://xapp-sample-todolist.xappscdn.com/";
+    document.getElementById("appName").innerHTML = "Todo List xApp";
+    const xAppHeader = document.getElementById("xapp-header").classList;
+    if (xAppHeader.contains("fade")) {
+      xAppHeader.remove("fade");
+    }
+
+    demoApps[0].active = true;
+    demoApps[1].active = false;
+    const active = document.getElementById("todo")?.classList;
+    if (active?.contains("defaultBGColor")) {
+      active.remove("defaultBGColor");
+      active.add("activeBGColor");
+    }
+    const notActive = document.getElementById("survey")?.classList;
+    if (notActive?.contains("activeBGColor")) {
+      notActive.remove("activeBGColor");
+      notActive.add("defaultBGColor");
+    }
+  }
+
+  if (
+    webview.src !== "https://xapp-sample-survey.xappscdn.com/" &&
+    example === "survey"
+  ) {
+    console.clear();
+
+    console.log(`%cLoading Sample Survey Form xApp ..`, "font-weight: bold");
+    webview.src = "https://xapp-sample-survey.xappscdn.com/";
+    document.getElementById("appName").innerHTML = "Sample Survey xApp";
+    const xAppHeader = document.getElementById("xapp-header").classList;
+    if (xAppHeader.contains("fade")) {
+      xAppHeader.remove("fade");
+    }
+
+    demoApps[0].active = false;
+    demoApps[1].active = true;
+    const active = document.getElementById("survey")?.classList;
+    if (active?.contains("defaultBGColor")) {
+      active.remove("defaultBGColor");
+      active.add("activeBGColor");
+    }
+    const notActive = document.getElementById("todo")?.classList;
+    if (notActive?.contains("activeBGColor")) {
+      notActive.remove("activeBGColor");
+      notActive.add("defaultBGColor");
+    }
+  }
+};
+
+const removeAddressBar = () => {
+  const selectionRefresh = document.getElementById(
+    "selection-refresh-div"
+  ).classList;
+  if (!selectionRefresh.contains("fade")) {
+    selectionRefresh.add("fade");
+  }
+};
+
+const removeAppHeader = () => {
+  const xAppHeader = document.getElementById("xapp-header").classList;
+  if (!xAppHeader.contains("fade")) {
+    xAppHeader.add("fade");
+  }
 };
 
 // Modal cancel when clicked outside

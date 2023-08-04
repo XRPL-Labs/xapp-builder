@@ -78,16 +78,19 @@ const getActiveApp = () => {
 
 const getActiveAppOtt = async () => {
   const ott = storage.get("active-xapp-ott");
+
   const activeApp = storage.get("activeApp");
   if (activeApp === undefined) {
     return activeApp;
   }
+
   const xappUUID = JSON.parse(activeApp);
-  //console.log("ott ", ott);
+  /*
+  When the xApp is opened using a different raddress, it doesn't reflect on the xAppBuilder as the data is fetched from odl storage.
   if (ott !== undefined) {
     if (ott[0]?.app === xappUUID?.uuid) return ott;
   }
-
+*/
   const bearer = getBearer();
 
   const options = {
@@ -103,6 +106,7 @@ const getActiveAppOtt = async () => {
   );
 
   const res = await result.json();
+
   if (res.error) {
     return res;
   }
@@ -142,6 +146,7 @@ const clearStorage = () => {
   storage.set("all-xapps", 1);
   storage.delete("activeApp");
   storage.delete("bearer");
+  storage.delete("active-xapp-ott"); // added before release, so monitor for sometime.
 };
 
 module.exports = {
