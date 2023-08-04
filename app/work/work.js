@@ -522,6 +522,9 @@ window.xAppBuilder.receive("from-main", async (args) => {
 
         webview.send("send-to-xapp", JSON.stringify(action));
       });
+  } else if (args.command === "ready") {
+    // write appropriate logic
+    // https://github.com/XRPL-Labs/xapp-builder/issues/14
   }
 });
 

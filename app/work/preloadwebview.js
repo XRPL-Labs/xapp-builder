@@ -10,6 +10,7 @@ function display(msg) {
     "share",
     "close",
     "xAppNavigate",
+    "ready",
   ];
   if (msg.data !== "XAPP_PROXY_INIT_ACK" && msg.data !== "XAPP_PROXY_INIT") {
     const data = JSON.parse(msg.data);
