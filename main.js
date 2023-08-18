@@ -60,6 +60,22 @@ const workRendererFunction = () => {
   appMenu();
   workRenderer = new BrowserWindow(rendererOptions);
 
+  //Start: This block of code is for xApps which are not sandboxed. Ex: Partner xApps which need permission to device camera etc.
+
+  workRenderer.webContents.session.webRequest.onHeadersReceived(
+    { urls: ["*://*/*"] },
+    (d, c) => {
+      if (d.responseHeaders["X-Frame-Options"]) {
+        delete d.responseHeaders["X-Frame-Options"];
+      } else if (d.responseHeaders["x-frame-options"]) {
+        delete d.responseHeaders["x-frame-options"];
+      }
+      c({ cancel: false, responseHeaders: d.responseHeaders });
+    }
+  );
+
+  //End: This block of code is for xApps which are not sandboxed. Ex: Partner xApps which need permission to device camera etc.
+
   workRenderer.loadFile(path.join(__dirname, "./app/work/index.html"));
 
   workRenderer.once("ready-to-show", () => {

@@ -36,6 +36,12 @@ module.exports = () => {
           },
         },
         {
+          label: "Press Release",
+          click: () => {
+            shell.openExternal("https://blog.xumm.app/xappbuilder");
+          },
+        },
+        {
           label: "xAppBuilder FAQ",
           click: () => {
             shell.openExternal(
@@ -43,6 +49,15 @@ module.exports = () => {
             );
           },
         },
+        {
+          label: "Switching Network",
+          click: () => {
+            shell.openExternal(
+              "https://docs.xumm.dev/environments/xapps-dapps/xappbuilder/xappbuilder-faq#switching-network"
+            );
+          },
+        },
+
         {
           label: "localhost to xAppBuilder",
           click: () => {

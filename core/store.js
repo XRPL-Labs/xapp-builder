@@ -56,8 +56,11 @@ const getAllApps = async (args) => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${bearer}`,
+      "User-Agent": "xumm/xapp:2.5",
+      Accept: "application/json",
     },
   };
+
   const result = await fetch(
     `https://xumm.app/api/v1/jwt/xapp-emulator`,
     options
@@ -98,8 +101,11 @@ const getActiveAppOtt = async () => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${bearer}`,
+      "User-Agent": "xumm/xapp:2.5",
+      Accept: "application/json",
     },
   };
+
   const result = await fetch(
     `https://xumm.app/api/v1/jwt/xapp-emulator/${xappUUID.uuid}`,
     options
@@ -110,18 +116,22 @@ const getActiveAppOtt = async () => {
   if (res.error) {
     return res;
   }
-  const array = [];
-  const temp = [];
-  res.forEach((currentValue, index) => {
-    if (!temp.includes(currentValue.account)) {
-      temp.push(currentValue.account);
-      array.push(currentValue);
-    }
-  });
-  storage.set("active-xapp-ott", array);
-  // console.log("array ", array);
-
-  return array;
+  if (res.length === 0) {
+    return res;
+  }
+  if (JSON.parse(storage.get("activeApp")).uuid === res[0]?.app) {
+    const array = [];
+    const temp = [];
+    res.forEach((currentValue, index) => {
+      if (!temp.includes(currentValue.account)) {
+        temp.push(currentValue.account);
+        array.push(currentValue);
+      }
+    });
+    storage.set("active-xapp-ott", array);
+    // console.log("array ", array);
+    return array;
+  }
 };
 
 const getReplayOtt = async (app, ott) => {
@@ -132,8 +142,11 @@ const getReplayOtt = async (app, ott) => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${bearer}`,
+      "User-Agent": "xumm/xapp:2.5",
+      Accept: "application/json",
     },
   };
+
   const result = await fetch(
     `https://xumm.app/api/v1/jwt/xapp-emulator/${app}/${ott}`,
     options

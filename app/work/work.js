@@ -10,7 +10,8 @@ let Sdk,
   loadSidebar = 1,
   appTitle = "Workspace",
   webviewLoading = false,
-  previousSpace = 0;
+  previousSpace = 0,
+  networkInfo = "Mainnet";
 
 const demoApps = [
   {
@@ -142,6 +143,11 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
     return;
   }
 
+  if (data.app !== activeApp) {
+    // If the user quickly clicked on different xApp, but the server returned result for the old request, then do not process the old result.
+    return;
+  }
+
   console.clear();
   console.log(
     `%cPlease wait until the selected xApp loads.`,
@@ -161,7 +167,15 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
   console.log(`%c AppUrl: ${data.url.split("/force")[0]}`, "color: #3BDC96;");
   console.log(`%c DeviceId: ${data.device}`, "color: #3BDC96;");
   console.log(`%c Context: ${selectedAccount}`, "color: #3BDC96;");
+  /*
+  console.log(`%c Network: ${networkInfo}`, "color: #3BDC96;");
+  Sdk = new XummSdkJwt(data.app, data.ott);
 
+  Sdk.ping();
+  // myAccount = c?.account;
+  //appName = c?.application?.name;
+  networkInfo = tokenNetwork?.jwtData?.net;
+*/
   // console.log(
   //   `%c OTT Expires: ${getRelativeTimeString(
   //     new Date(ottExpires),
@@ -181,6 +195,7 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
 
   webview.src = data.url;
   webview.setUserAgent("xumm/xapp");
+  /*
   if (navigator.userAgent.indexOf("xumm/xapp") === -1) {
     Object.defineProperty(navigator, "userAgent", {
       value: `xumm/xapp:2.5.0 (ott:${activeOtt})`,
@@ -189,6 +204,7 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
       value: `xumm/xapp:2.5.0 (ott:${activeOtt})`,
     });
   }
+  */
 });
 
 const webviewIsLoading = () => {
@@ -266,7 +282,8 @@ const loadstart = () => {
   webviewLoading = true;
   const spinner = document.getElementById("loader");
   spinner.style.display = "inline";
-  spinner.innerHTML = "loading ...";
+  // Removed below line, as a bootstrap spinner is added in the loading UI
+  //spinner.innerHTML = "loading ...";
 
   const webviewReload = document.getElementById("webview-reload").classList;
   if (!webviewReload.contains("disabled")) {
@@ -497,6 +514,7 @@ window.xAppBuilder.receive("from-main", async (args) => {
       .getElementById("qr-content-close")
       .addEventListener("click", () => {
         const action = {
+          method: "scanQr",
           qrContents: null,
           reason: "USER_CLOSE",
         };
@@ -510,11 +528,13 @@ window.xAppBuilder.receive("from-main", async (args) => {
 
         if (result === "") {
           action = {
+            method: "scanQr",
             qrContents: null,
             reason: "INVALID_QR",
           };
         } else {
           action = {
+            method: "scanQr",
             qrContents: result,
             reason: "SCANNED",
           };
@@ -523,8 +543,10 @@ window.xAppBuilder.receive("from-main", async (args) => {
         webview.send("send-to-xapp", JSON.stringify(action));
       });
   } else if (args.command === "ready") {
-    // write appropriate logic
-    // https://github.com/XRPL-Labs/xapp-builder/issues/14
+    const action = {
+      method: "ready",
+    };
+    webview.send("send-to-xapp", JSON.stringify(action));
   }
 });
 
@@ -563,44 +585,6 @@ const selectedAddress = () => {
 };
 
 // End: Main Logic
-
-// Start: Utility methods
-function getRelativeTimeString(date, lang) {
-  // Allow dates or times to be passed
-  console.log(date);
-  const timeMs = typeof date === "number" ? date : date.getTime();
-
-  // Get the amount of seconds between the given date and now
-  const deltaSeconds = Math.round((timeMs - Date.now()) / 1000);
-
-  // Array reprsenting one minute, hour, day, week, month, etc in seconds
-  const cutoffs = [
-    60,
-    3600,
-    86400,
-    86400 * 7,
-    86400 * 30,
-    86400 * 365,
-    Infinity,
-  ];
-
-  // Array equivalent to the above but in the string representation of the units
-  const units = ["second", "minute", "hour", "day", "week", "month", "year"];
-
-  // Grab the ideal cutoff unit
-  const unitIndex = cutoffs.findIndex(
-    (cutoff) => cutoff > Math.abs(deltaSeconds)
-  );
-
-  // Get the divisor to divide from the seconds. E.g. if our unit is "day" our divisor
-  // is one day in seconds, so we can divide our seconds by this to get the # of days
-  const divisor = unitIndex ? cutoffs[unitIndex - 1] : 1;
-
-  // Intl.RelativeTimeFormat do its magic
-  const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
-  return rtf.format(Math.floor(deltaSeconds / divisor), units[unitIndex]);
-}
-// End Utility Methods
 
 // Common features
 window.addEventListener("online", () =>
@@ -731,9 +715,10 @@ const renderCard = (event) => {
 
       const content = `<img src="${
         list.icon
-      }" width="50" height="50" class="img-thumbnail ms-2" alt="${
+      }" width="50px" height="50px" style="border-radius: 12px;" 
+      class="ms-2" alt="${
         list.name
-      }"  /> <div class="mt-1">${
+      }"  /> <div class="mt-1" style="line-height: normal;">${
         list.canLaunch ? `<strong>${list.name}</strong>` : list.name
       } <br /><small style="font-size: small;">${
         list.description.length > 30
@@ -751,7 +736,7 @@ const renderCard = (event) => {
 
         setTimeout(() => {
           openApp(list.uuid, list.canLaunch, list.xapp, list.icon, list.name);
-        }, 1000);
+        }, 500);
       } else {
         li.classList.add("defaultBGColor");
       }
@@ -762,6 +747,7 @@ const renderCard = (event) => {
 
 const openApp = (uuid, canLaunch, xapp, icon, name) => {
   cancelModal();
+  appTitle = name;
   const isLoading = webviewIsLoading();
 
   if (isLoading) {
@@ -872,6 +858,7 @@ const xAppImporter = () => {
       window.xAppBuilder.send("save-bearer", e);
       loadCard(true);
       channel.unsubscribe(uuid4);
+      realtime.close();
     });
   })();
 };

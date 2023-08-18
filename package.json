@@ -48,7 +48,7 @@
         "ITSAppUsesNonExemptEncryption": false,
         "electronTeamId": "LK5BBJNJZ6"
       },
-      "bundleVersion": "40",
+      "bundleVersion": "41",
       "provisioningProfile": "xAppBuilder.provisionprofile",
       "entitlements": "entitlement/entitlements.mac.plist",
       "hardenedRuntime": true,
@@ -88,8 +88,8 @@
     "xrpl-txdata": "^1.2.1"
   },
   "devDependencies": {
-    "electron": "^24.4.0",
-    "electron-builder": "^23.6.0",
+    "electron": "^26.0.0",
+    "electron-builder": "^24.6.3",
     "nodemon": "^2.0.21"
   }
 }

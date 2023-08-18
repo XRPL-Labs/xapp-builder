@@ -37,13 +37,13 @@
   <body onload="loadxApp()">
     <div class="p-0 m-0">
       <div class="hstack align-items-start gap-3">
-        <div class="text-bg-light" id="sidebar">
+        <div class="text-bg-light vh-100" id="sidebar">
           <div class="vstack text-bg-light">
             <div class="ms-4 card hstack gap-2 text-bg-light">
               <img
                 src="../assets/images/appicon.png"
-                width="52"
-                height="52"
+                width="50"
+                height="50"
                 class="img-thumbnail"
                 loading="lazy"
               />
@@ -187,10 +187,14 @@
                   z-index: 10;
                   position: relative;
                   top: -333px;
-                  left: 108px;
+                  left: 125px;
                   font-weight: bolder;
                 "
-              ></span>
+              >
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </span>
               <!-- Transaction details -->
               <div
                 class="modal fade"

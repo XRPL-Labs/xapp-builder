@@ -1,5 +1,5 @@
 const { ipcRenderer } = require("electron");
-
+let ReactNative = "";
 function display(msg) {
   const array = [
     "txDetails",
