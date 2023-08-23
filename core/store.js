@@ -2,9 +2,9 @@ const Store = require("electron-store");
 const storage = new Store();
 
 const getWindowSettings = () => {
-  const default_bounds = [1360, 780];
+  const default_bounds = [1360, 800]; //height 780
   const size = storage.get("win-size");
-
+  // storage.delete("win-size");
   if (size) return size;
   else {
     storage.set("win-size", default_bounds);
