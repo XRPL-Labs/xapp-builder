@@ -150,7 +150,6 @@
                 </button>
               </div>
             </div>
-
             <img
               src="./../assets/device-frame/pixel-5.png"
               id="frame-img"
@@ -176,21 +175,44 @@
                   preload="./preloadwebview.js"
                   src="../splashscreen.html"
                   useragent="xumm/xapp"
+                  style="transition: all 0.5s ease"
                 >
                 </webview>
+                <div id="scaling">
+                  <ul class="nav justify-content-center">
+                    <li class="nav-item">
+                      <button
+                        class="nav-link btn btn-link"
+                        aria-current="page"
+                        onclick="renderScale('scaleSmall')"
+                        id="scaleSmall"
+                      >
+                        Small
+                      </button>
+                    </li>
+                    <li class="nav-item">
+                      <button
+                        class="nav-link btn btn-link"
+                        onclick="renderScale('scaleMedium')"
+                        id="scaleMedium"
+                      >
+                        Medium
+                      </button>
+                    </li>
+                    <li class="nav-item">
+                      <button
+                        class="nav-link scaleActiveBtn btn btn-link"
+                        onclick="renderScale('large')"
+                        id="large"
+                      >
+                        Large
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <span
-                id="loader"
-                style="
-                  max-width: 291px;
-                  height: 610px;
-                  z-index: 10;
-                  position: relative;
-                  top: -333px;
-                  left: 125px;
-                  font-weight: bolder;
-                "
-              >
+
+              <span id="loader">
                 <div class="spinner-border" role="status">
                   <span class="visually-hidden">Loading...</span>
                 </div>

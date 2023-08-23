@@ -184,7 +184,8 @@ img {
 #phone-frame {
   width: 370px !important;
   min-width: 370px;
-  height: 775px;
+  /* height: 775px; */
+  height: 800px;
   overflow-y: hidden;
   overflow-x: hidden;
 }
@@ -214,4 +215,59 @@ img {
   width: 280px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+#scaling {
+  position: absolute;
+  top: 657px;
+  left: 24px;
+}
+
+.scaleSmall {
+  transform: 0.8;
+
+  -webkit-transform: scale(0.8);
+  -moz-transform: scale(0.8);
+}
+.scaleMedium {
+  transform: 0.9;
+  -webkit-transform: scale(0.9);
+  -moz-transform: scale(0.9);
+}
+
+.scaleActiveBtn {
+  font-weight: bold;
+}
+
+.scaleSmallMainWindow {
+  width: 363px;
+  height: 696px;
+  word-wrap: break-word;
+  position: relative;
+  top: -69px;
+  left: -36px;
+  z-index: 4;
+  overflow: hidden !important;
+}
+
+.scaleMediumMainWindow {
+  width: 323px;
+  height: 619px;
+  word-wrap: break-word;
+  position: relative;
+  top: -31px;
+  left: -16px;
+  z-index: 4;
+  overflow: hidden !important;
+}
+
+#loader {
+  max-width: 291px;
+  height: 610px;
+  z-index: 10;
+  position: absolute;
+  /* top: -333px; */
+  top: 320px;
+  left: 125px;
+  font-weight: bolder;
 }

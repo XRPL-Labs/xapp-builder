@@ -126,7 +126,7 @@ window.xAppBuilder.receive("active-xapp", (args) => {
   });
 });
 
-window.xAppBuilder.receive("saved-active-xapp", (args) => {
+window.xAppBuilder.receive("saved-active-xapp", async (args) => {
   const data = JSON.parse(args);
   //console.log(args);
   if (data.error) {
@@ -148,6 +148,15 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
     return;
   }
 
+  Sdk = new XummSdkJwt(data.app, data.ott);
+
+  const c = await Sdk.ping();
+  myAccount = c?.account;
+  appName = c?.application?.name;
+  networkInfo = c?.jwtData?.net;
+  appTitle = c?.jwtData?.app_name;
+  //  ottExpires = c?.jwtData?.exp;
+
   console.clear();
   console.log(
     `%cPlease wait until the selected xApp loads.`,
@@ -167,22 +176,21 @@ window.xAppBuilder.receive("saved-active-xapp", (args) => {
   console.log(`%c AppUrl: ${data.url.split("/force")[0]}`, "color: #3BDC96;");
   console.log(`%c DeviceId: ${data.device}`, "color: #3BDC96;");
   console.log(`%c Context: ${selectedAccount}`, "color: #3BDC96;");
-  /*
   console.log(`%c Network: ${networkInfo}`, "color: #3BDC96;");
-  Sdk = new XummSdkJwt(data.app, data.ott);
+  /*
+  console.log(
+    `%c OTT Expires: ${new Date(ottExpires * 1000).toLocaleString(
+      Intl.NumberFormat().resolvedOptions().locale,
+      {
+        dateStyle: "full",
+        timeStyle: "medium",
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }
+    )}`,
+    "color: #3BDC96;"
+  );
+  */
 
-  Sdk.ping();
-  // myAccount = c?.account;
-  //appName = c?.application?.name;
-  networkInfo = tokenNetwork?.jwtData?.net;
-*/
-  // console.log(
-  //   `%c OTT Expires: ${getRelativeTimeString(
-  //     new Date(ottExpires),
-  //     window.navigator.language
-  //   )}`,
-  //   "color: #3BDC96;"
-  // );
   console.log("\n");
   activeApp = data.app;
   activeOtt = data.ott;
@@ -1038,6 +1046,71 @@ const SamplexApp = (example) => {
     if (notActive?.contains("activeBGColor")) {
       notActive.remove("activeBGColor");
       notActive.add("defaultBGColor");
+    }
+  }
+};
+
+const renderScale = (transform) => {
+  const listItems = document.querySelector("#scaling");
+  const items = listItems.getElementsByTagName("button");
+
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].classList.contains("scaleActiveBtn")) {
+      items[i].classList.remove("scaleActiveBtn");
+    }
+  }
+  const activate = document.getElementById(transform);
+  if (!activate.classList.contains("scaleActiveBtn")) {
+    activate.classList.add("scaleActiveBtn");
+  }
+
+  if (transform === "scaleSmall") {
+    if (webview.classList.contains("scaleMedium")) {
+      webview.classList.remove("scaleMedium");
+    }
+    if (!webview.classList.contains("scaleSmall")) {
+      webview.classList.add("scaleSmall");
+    }
+    if (!webview.classList.contains("scaleSmallMainWindow")) {
+      webview.classList.add("scaleSmallMainWindow");
+    }
+    if (webview.classList.contains("scaleMediumMainWindow")) {
+      webview.classList.remove("scaleMediumMainWindow");
+    }
+  } else if (transform === "scaleMedium") {
+    if (webview.classList.contains("scaleSmall")) {
+      webview.classList.remove("scaleSmall");
+    }
+    if (!webview.classList.contains("scaleMedium")) {
+      webview.classList.add("scaleMedium");
+    }
+    if (webview.classList.contains("scaleSmallMainWindow")) {
+      webview.classList.remove("scaleSmallMainWindow");
+    }
+    if (!webview.classList.contains("scaleMediumMainWindow")) {
+      webview.classList.add("scaleMediumMainWindow");
+    }
+  } else {
+    if (webview.classList.contains("scaleSmall")) {
+      webview.classList.remove("scaleSmall");
+    }
+    if (webview.classList.contains("scaleMedium")) {
+      webview.classList.remove("scaleMedium");
+    }
+    if (webview.classList.contains("scaleSmallMainWindow")) {
+      webview.classList.remove("scaleSmallMainWindow");
+    }
+    if (webview.classList.contains("scaleMediumMainWindow")) {
+      webview.classList.remove("mainWindow");
+    }
+    if (!webview.classList.contains("mainWindow")) {
+      webview.classList.add("mainWindow");
+    }
+    if (webview.classList.contains("scaleSmallMainWindow")) {
+      webview.classList.remove("scaleSmallMainWindow");
+    }
+    if (webview.classList.contains("scaleMediumMainWindow")) {
+      webview.classList.remove("scaleMediumMainWindow");
     }
   }
 };

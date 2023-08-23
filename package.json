@@ -3,7 +3,7 @@
   "productName": "xAppBuilder",
   "description": "Build and debug your xApps for Xumm.",
   "main": "main.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scripts": {
     "start": "electron .",
     "watch": "nodemon --exec electron .",
