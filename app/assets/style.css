@@ -220,15 +220,20 @@ img {
 #scaling {
   position: absolute;
   top: 657px;
-  left: 24px;
+  font-size: small;
 }
 
 .scaleSmall {
+  transform: 0.7;
+  -webkit-transform: scale(0.7);
+  -moz-transform: scale(0.7);
+}
+.scaleNormal {
   transform: 0.8;
-
   -webkit-transform: scale(0.8);
   -moz-transform: scale(0.8);
 }
+
 .scaleMedium {
   transform: 0.9;
   -webkit-transform: scale(0.9);
@@ -240,6 +245,17 @@ img {
 }
 
 .scaleSmallMainWindow {
+  width: 415px;
+  height: 796px;
+  word-wrap: break-word;
+  position: relative;
+  top: -119px;
+  left: -62px;
+  z-index: 4;
+  overflow: hidden !important;
+}
+
+.scaleNormalMainWindow {
   width: 363px;
   height: 696px;
   word-wrap: break-word;
@@ -250,6 +266,11 @@ img {
   overflow: hidden !important;
 }
 
+/* 
+  In the UI: workplace file, and not in index.html file.
+  replace scaleSmallMainWindow with scaleSmall and 
+  replace scaleMediumMainWindow with scaleSmall scaleSmallMainWindow. 
+*/
 .scaleMediumMainWindow {
   width: 323px;
   height: 619px;

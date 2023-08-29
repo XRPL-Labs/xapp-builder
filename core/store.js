@@ -2,7 +2,7 @@ const Store = require("electron-store");
 const storage = new Store();
 
 const getWindowSettings = () => {
-  const default_bounds = [1360, 800]; //height 780
+  const default_bounds = [1360, 813]; //height 780
   const size = storage.get("win-size");
   // storage.delete("win-size");
   if (size) return size;
@@ -142,17 +142,22 @@ const getReplayOtt = async (app, ott) => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${bearer}`,
-      "User-Agent": "xumm/xapp:2.5",
+      "User-Agent": "xumm/xapp",
       Accept: "application/json",
     },
   };
 
-  const result = await fetch(
-    `https://xumm.app/api/v1/jwt/xapp-emulator/${app}/${ott}`,
-    options
-  );
+  try {
+    const result = await fetch(
+      `https://xumm.app/api/v1/jwt/xapp-emulator/${app}/${ott}`,
+      options
+    );
 
-  return await result.json();
+    const response = await result.json();
+    return response;
+  } catch (e) {
+    console.log("err ", e);
+  }
 };
 
 const clearStorage = () => {

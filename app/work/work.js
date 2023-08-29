@@ -203,6 +203,7 @@ window.xAppBuilder.receive("saved-active-xapp", async (args) => {
 
   webview.src = data.url;
   webview.setUserAgent("xumm/xapp");
+
   /*
   if (navigator.userAgent.indexOf("xumm/xapp") === -1) {
     Object.defineProperty(navigator, "userAgent", {
@@ -282,7 +283,7 @@ webview.addEventListener("console-message", (e) => {
     //   "color: #FF5B5B;"
     // );
   } else {
-    // console.log("Extra ", JSON.stringify(e, null, "\t"));
+    //     console.log("Extra ", JSON.stringify(e, null, "\t"));
   }
 });
 
@@ -1051,6 +1052,7 @@ const SamplexApp = (example) => {
 };
 
 const renderScale = (transform) => {
+  //console.log(webview.contentWindow);
   const listItems = document.querySelector("#scaling");
   const items = listItems.getElementsByTagName("button");
 
@@ -1060,6 +1062,7 @@ const renderScale = (transform) => {
     }
   }
   const activate = document.getElementById(transform);
+
   if (!activate.classList.contains("scaleActiveBtn")) {
     activate.classList.add("scaleActiveBtn");
   }
@@ -1068,11 +1071,38 @@ const renderScale = (transform) => {
     if (webview.classList.contains("scaleMedium")) {
       webview.classList.remove("scaleMedium");
     }
+    if (webview.classList.contains("scaleNormal")) {
+      webview.classList.remove("scaleNormal");
+    }
     if (!webview.classList.contains("scaleSmall")) {
       webview.classList.add("scaleSmall");
     }
+
     if (!webview.classList.contains("scaleSmallMainWindow")) {
       webview.classList.add("scaleSmallMainWindow");
+    }
+    if (webview.classList.contains("scaleNormalMainWindow")) {
+      webview.classList.remove("scaleNormalMainWindow");
+    }
+    if (webview.classList.contains("scaleMediumMainWindow")) {
+      webview.classList.remove("scaleMediumMainWindow");
+    }
+  } else if (transform === "scaleNormal") {
+    if (webview.classList.contains("scaleMedium")) {
+      webview.classList.remove("scaleMedium");
+    }
+    if (!webview.classList.contains("scaleNormal")) {
+      webview.classList.add("scaleNormal");
+    }
+    if (webview.classList.contains("scaleSmall")) {
+      webview.classList.remove("scaleSmall");
+    }
+
+    if (!webview.classList.contains("scaleNormalMainWindow")) {
+      webview.classList.add("scaleNormalMainWindow");
+    }
+    if (webview.classList.contains("scaleSmallMainWindow")) {
+      webview.classList.remove("scaleSmallMainWindow");
     }
     if (webview.classList.contains("scaleMediumMainWindow")) {
       webview.classList.remove("scaleMediumMainWindow");
@@ -1081,11 +1111,18 @@ const renderScale = (transform) => {
     if (webview.classList.contains("scaleSmall")) {
       webview.classList.remove("scaleSmall");
     }
+    if (!webview.classList.contains("scaleNormal")) {
+      webview.classList.remove("scaleNormal");
+    }
     if (!webview.classList.contains("scaleMedium")) {
       webview.classList.add("scaleMedium");
     }
+
     if (webview.classList.contains("scaleSmallMainWindow")) {
       webview.classList.remove("scaleSmallMainWindow");
+    }
+    if (webview.classList.contains("scaleNormalMainWindow")) {
+      webview.classList.remove("scaleNormalMainWindow");
     }
     if (!webview.classList.contains("scaleMediumMainWindow")) {
       webview.classList.add("scaleMediumMainWindow");
@@ -1093,6 +1130,9 @@ const renderScale = (transform) => {
   } else {
     if (webview.classList.contains("scaleSmall")) {
       webview.classList.remove("scaleSmall");
+    }
+    if (webview.classList.contains("scaleNormal")) {
+      webview.classList.remove("scaleNormal");
     }
     if (webview.classList.contains("scaleMedium")) {
       webview.classList.remove("scaleMedium");
@@ -1108,6 +1148,9 @@ const renderScale = (transform) => {
     }
     if (webview.classList.contains("scaleSmallMainWindow")) {
       webview.classList.remove("scaleSmallMainWindow");
+    }
+    if (webview.classList.contains("scaleNormalMainWindow")) {
+      webview.classList.remove("scaleNormalMainWindow");
     }
     if (webview.classList.contains("scaleMediumMainWindow")) {
       webview.classList.remove("scaleMediumMainWindow");
