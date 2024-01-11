@@ -201,6 +201,7 @@ img {
 
 .activeBGColor {
   background-color: #ffffff !important;
+  border-radius: 15px 0px 0px 15px;
 }
 
 .titleImort {
@@ -291,4 +292,10 @@ img {
   top: 320px;
   left: 125px;
   font-weight: bolder;
+}
+#network-switch {
+  min-width: auto !important;
+}
+#network-switch a {
+  font-size: x-small !important;
 }

@@ -56,7 +56,7 @@ const getAllApps = async (args) => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${bearer}`,
-      "User-Agent": "xumm/xapp:2.5",
+      "User-Agent": "xumm/xapp",
       Accept: "application/json",
     },
   };
@@ -80,7 +80,7 @@ const getActiveApp = () => {
 };
 
 const getActiveAppOtt = async () => {
-  const ott = storage.get("active-xapp-ott");
+  // const ott = storage.get("active-xapp-ott");
 
   const activeApp = storage.get("activeApp");
   if (activeApp === undefined) {
@@ -89,7 +89,7 @@ const getActiveAppOtt = async () => {
 
   const xappUUID = JSON.parse(activeApp);
   /*
-  When the xApp is opened using a different raddress, it doesn't reflect on the xAppBuilder as the data is fetched from odl storage.
+  When the xApp is opened using a different raddress, it doesn't reflect on the xAppBuilder as the data is fetched from old storage.
   if (ott !== undefined) {
     if (ott[0]?.app === xappUUID?.uuid) return ott;
   }
@@ -101,7 +101,7 @@ const getActiveAppOtt = async () => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${bearer}`,
-      "User-Agent": "xumm/xapp:2.5",
+      "User-Agent": "xumm/xapp",
       Accept: "application/json",
     },
   };
@@ -120,6 +120,7 @@ const getActiveAppOtt = async () => {
     return res;
   }
   if (JSON.parse(storage.get("activeApp")).uuid === res[0]?.app) {
+    /*
     const array = [];
     const temp = [];
     res.forEach((currentValue, index) => {
@@ -129,8 +130,10 @@ const getActiveAppOtt = async () => {
       }
     });
     storage.set("active-xapp-ott", array);
-    // console.log("array ", array);
     return array;
+    */
+    //storage.set("active-xapp-ott", res);
+    return res;
   }
 };
 
@@ -164,7 +167,7 @@ const clearStorage = () => {
   storage.set("all-xapps", 1);
   storage.delete("activeApp");
   storage.delete("bearer");
-  storage.delete("active-xapp-ott"); // added before release, so monitor for sometime.
+  //storage.delete("active-xapp-ott"); // added before release, so monitor for sometime.
 };
 
 module.exports = {

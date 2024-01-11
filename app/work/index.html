@@ -160,8 +160,28 @@
             <div class="bg-transparent" id="frame-div">
               <div class="vstack">
                 <div class="mt-4 row ms-1 me-1" id="xapp-header">
-                  <div class="col fw-bold mt-3 fs-7" id="appName">App Name</div>
-                  <div class="col-auto mt-2">
+                  <div
+                    class="col fw-bold mt-3"
+                    id="appName"
+                    style="font-size: small"
+                  >
+                    App Name
+                  </div>
+                  <div class="hstack gap-1 col-auto mt-2">
+                    <div class="dropdown">
+                      <button
+                        class="btn btn-light btn-sm dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <i
+                          class="bi bi-three-dots fw-bolder"
+                          id="network-switch-color"
+                        ></i>
+                      </button>
+                      <ul class="dropdown-menu" id="network-switch"></ul>
+                    </div>
                     <button
                       class="btn btn-dark btn-sm rounded-4"
                       onclick="xAppClose();"

@@ -48,9 +48,9 @@ ipcMain.on("openExternal", (e, url) => {
   );
 });
 
-ipcMain.on("tx", async (e, txHash) => {
-  const txd = new TxData();
-  e.sender.send("tx", await txd.get(txHash));
+ipcMain.on("tx", async (e, args) => {
+  const txd = new TxData(args.network);
+  e.sender.send("tx", await txd.get(args.tx));
   txd.end();
 });
 

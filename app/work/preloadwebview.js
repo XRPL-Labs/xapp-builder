@@ -10,6 +10,7 @@ function display(msg) {
     "share",
     "close",
     "xAppNavigate",
+    "networkSwitch",
     "ready",
   ];
   if (msg.data !== "XAPP_PROXY_INIT_ACK" && msg.data !== "XAPP_PROXY_INIT") {

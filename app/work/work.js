@@ -11,7 +11,12 @@ let Sdk,
   appTitle = "Workspace",
   webviewLoading = false,
   previousSpace = 0,
-  networkInfo = "Mainnet";
+  networkInfo = "Mainnet",
+  networkName = "",
+  rails = {},
+  activeAppArray = [],
+  NetworkList = [],
+  fromNetworkSelection = 0;
 
 const demoApps = [
   {
@@ -41,7 +46,7 @@ const loadxApp = () => {
     loadCard(false);
   }
 };
-window.xAppBuilder.receive("active-xapp", (args) => {
+window.xAppBuilder.receive("active-xapp", async (args) => {
   if (args === undefined) {
     const xAppHeader = document.getElementById("xapp-header").classList;
     if (!xAppHeader.contains("fade")) {
@@ -88,30 +93,46 @@ window.xAppBuilder.receive("active-xapp", (args) => {
 
   let addressPresent = false;
 
+  const networkListTemp = [];
+  activeAppArray = data;
   data.map((app) => {
-    const option = document.createElement("option");
-    if (app.account === selectedAccount) {
-      addressPresent = true;
-      option.value = app.ott;
-      option.innerHTML = app.account;
-      activeApp = app.app;
-      selectedAccount = app.account;
-      activeOtt = app.ott;
-    } else {
-      option.value = app.ott;
-      option.innerHTML = app.account;
-    }
+    if (!networkListTemp.includes(app.account)) {
+      networkListTemp.push(app.account);
 
-    select.appendChild(option);
+      const option = document.createElement("option");
+      if (app.account === selectedAccount) {
+        networkName = app.network;
+        addressPresent = true;
+        option.value = app.ott;
+        option.innerHTML = app.account;
+        activeApp = app.app;
+        selectedAccount = app.account;
+        activeOtt = app.ott;
+      } else {
+        option.value = app.ott;
+        option.innerHTML = app.account;
+      }
+
+      select.appendChild(option);
+    }
   });
 
   if (!addressPresent) {
     activeApp = data[0].app;
     selectedAccount = data[0].account;
     activeOtt = data[0].ott;
+    networkName = data[0].network;
   } else {
     document.getElementById("raddresses").value = activeOtt;
   }
+  // Start: 1/4
+  NetworkList = [];
+  activeAppArray.map((app) => {
+    if (app.account === selectedAccount) {
+      NetworkList.push(app.network);
+    }
+  });
+  // End: 1/4
 
   const selectionRefresh = document.getElementById(
     "selection-refresh-div"
@@ -128,7 +149,6 @@ window.xAppBuilder.receive("active-xapp", (args) => {
 
 window.xAppBuilder.receive("saved-active-xapp", async (args) => {
   const data = JSON.parse(args);
-  //console.log(args);
   if (data.error) {
     const xAppHeader = document.getElementById("xapp-header").classList;
     if (!xAppHeader.contains("fade")) {
@@ -157,7 +177,8 @@ window.xAppBuilder.receive("saved-active-xapp", async (args) => {
   appTitle = c?.jwtData?.app_name;
   //  ottExpires = c?.jwtData?.exp;
 
-  console.clear();
+  if (!fromNetworkSelection) console.clear();
+  fromNetworkSelection = 0; // reset it. Again if it comes from the network selection, then it's value will be 1.
   console.log(
     `%cPlease wait until the selected xApp loads.`,
     "color: #FF5B5B; font-weight: bold;"
@@ -190,10 +211,15 @@ window.xAppBuilder.receive("saved-active-xapp", async (args) => {
     "color: #3BDC96;"
   );
   */
-
   console.log("\n");
+
   activeApp = data.app;
   activeOtt = data.ott;
+
+  // Start: Load the Network List
+  await SwitchNetworkEventCreate(NetworkList, networkName, false);
+  // End: Load the rails
+
   window.xAppBuilder.send("title", "");
 
   const isLoading = webviewIsLoading();
@@ -203,17 +229,6 @@ window.xAppBuilder.receive("saved-active-xapp", async (args) => {
 
   webview.src = data.url;
   webview.setUserAgent("xumm/xapp");
-
-  /*
-  if (navigator.userAgent.indexOf("xumm/xapp") === -1) {
-    Object.defineProperty(navigator, "userAgent", {
-      value: `xumm/xapp:2.5.0 (ott:${activeOtt})`,
-    });
-    Object.defineProperty(navigator, "appVersion", {
-      value: `xumm/xapp:2.5.0 (ott:${activeOtt})`,
-    });
-  }
-  */
 });
 
 const webviewIsLoading = () => {
@@ -221,11 +236,20 @@ const webviewIsLoading = () => {
 };
 
 const context = (sel) => {
+  selectedAccount = sel.options[sel.selectedIndex].text;
+  // Start: 2/4
+  NetworkList = [];
+  activeAppArray.map((app) => {
+    if (app.account === selectedAccount) {
+      NetworkList.push(app.network);
+    }
+  });
+  // End: 2/4
+
   window.xAppBuilder.send("get-active-xapp", {
     app: activeApp,
     ott: document.getElementById("raddresses").value,
   });
-  selectedAccount = sel.options[sel.selectedIndex].text;
 };
 
 webview.addEventListener("console-message", (e) => {
@@ -361,10 +385,16 @@ window.xAppBuilder.receive("from-main", async (args) => {
 
   //console.log("worker ", args);
   if (args.command === "txDetails") {
-    window.xAppBuilder.send("tx", args.tx);
-
-    // const txInfo = await Sdk.getTransaction(args.tx);
-    // console.log(txInfo);
+    const networkparameter = rails[networkName].endpoints.map(
+      (array) => array.url
+    );
+    const inputs = { tx: args.tx, network: networkparameter };
+    window.xAppBuilder.send("tx", inputs);
+    // window.xAppBuilder.send("tx", args.tx);
+    /*
+    const txInfo = await Sdk.getTransaction(args.tx);
+    console.log(txInfo);
+    */
 
     const transactionDetailShareBtn = document.getElementById(
       "transactionDetailShareBtn"
@@ -554,6 +584,38 @@ window.xAppBuilder.receive("from-main", async (args) => {
   } else if (args.command === "ready") {
     const action = {
       method: "ready",
+    };
+    webview.send("send-to-xapp", JSON.stringify(action));
+  } else if (args.command === "networkswitch") {
+    const action = {
+      method: "networkSwitch",
+      network: args.network.toUpperCase(),
+    };
+
+    // Start: 4/4
+    NetworkList = [];
+    activeAppArray.map((app) => {
+      if (app.account === selectedAccount) {
+        NetworkList.push(app.network);
+        if (app.network === args.network.toUpperCase()) {
+          activeOtt = app.ott;
+          activeApp = app.app;
+        }
+      }
+    });
+    // End: 4/4
+
+    await SwitchNetworkEventCreate(
+      NetworkList,
+      args.network.toUpperCase(),
+      true
+    );
+    //webview.send("send-to-xapp", JSON.stringify(action));
+    // ^ it's called in SwitchNetworkEventCreate method itself.
+  } else {
+    const action = {
+      method: args.command,
+      ...args,
     };
     webview.send("send-to-xapp", JSON.stringify(action));
   }
@@ -1171,6 +1233,113 @@ const removeAppHeader = () => {
   const xAppHeader = document.getElementById("xapp-header").classList;
   if (!xAppHeader.contains("fade")) {
     xAppHeader.add("fade");
+  }
+};
+
+const InvokeNetworkSwitching = async (networkInvoked) => {
+  // Start: 3/4
+  NetworkList = [];
+  activeAppArray.map((app) => {
+    if (app.account === selectedAccount) {
+      NetworkList.push(app.network);
+      if (app.network === networkInvoked) {
+        activeOtt = app.ott;
+        activeApp = app.app;
+      }
+    }
+  });
+  // End: 3/4
+
+  await SwitchNetworkEventCreate(NetworkList, networkInvoked, true);
+};
+
+const SwitchNetworkEventCreate = async (
+  networkNamesArray,
+  networkInvoked,
+  flag
+) => {
+  if (flag) fromNetworkSelection = 1;
+
+  const switchNetwork = document.getElementById("network-switch");
+  switchNetwork.innerHTML = "";
+
+  Sdk = new XummSdkJwt(activeApp, activeOtt);
+  rails = await Sdk.getRails();
+
+  networkNamesArray.map((network) => {
+    const li = document.createElement("li");
+    li.classList.add("hstack");
+    li.classList.add("gap-1");
+    li.addEventListener("click", () => {
+      InvokeNetworkSwitching(network);
+    });
+
+    const a = document.createElement("a");
+
+    a.classList.add("dropdown-item");
+    a.href = "#";
+    a.innerHTML = network;
+    a.style.marginRight = "5px";
+    a.id = network;
+
+    if ("#FFFD74" === rails[network].color) {
+      rails[network].color = "#F8BF4C";
+    }
+
+    if (networkInvoked === network) {
+      document.getElementById("network-switch-color").style.color =
+        rails[network].color;
+      a.classList.add("active");
+      networkName = network; // Important: To send to xApp
+
+      if (flag) {
+        console.log(
+          "%c\nSwitching Network ...",
+          "font-weight: bolder; font-size: 1.1vw;"
+        );
+      } else {
+        console.log("\n");
+      }
+      if (!fromNetworkSelection) {
+        console.log(
+          `%c Network Name: ${rails[network].name} ( ${network} )`,
+          `color: ${rails[network].color};`
+        );
+        console.log(
+          `%c Chain ID: ${rails[network].chain_id}`,
+          `color: ${rails[network].color};`
+        );
+        console.log(
+          `%c Native Asset: ${rails[network].native_asset}`,
+          `color: ${rails[network].color};`
+        );
+        console.log(
+          `%c Reserve: Account ${rails[network].reserves.account} ${rails[network].native_asset}, Object ${rails[network].reserves.object} ${rails[network].native_asset} `,
+          `color: ${rails[network].color};`
+        );
+        console.log("\n");
+      }
+    }
+
+    const span = document.createElement("span");
+    span.innerHTML = "⦿";
+    span.style.color = rails[network].color;
+    span.style.marginLeft = "5px";
+    li.appendChild(span);
+    li.appendChild(a);
+    switchNetwork.appendChild(li);
+  });
+
+  if (flag) {
+    webview.send(
+      "send-to-xapp",
+      JSON.stringify({ method: "networkSwitch", network: networkInvoked })
+    );
+
+    window.xAppBuilder.send("get-active-xapp", {
+      app: activeApp,
+      ott: activeOtt,
+    });
   }
 };
 
