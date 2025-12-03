@@ -10,7 +10,9 @@ module.exports = () => {
         {
           label: "What are xApps?",
           click: () => {
-            shell.openExternal("https://xumm.readme.io/docs/what-are-xapps");
+            shell.openExternal(
+              "https://help.xumm.app/app/learning-more-about-xumm/guidelines-and-review-process-of-publishing-xapps"
+            );
           },
         },
         {

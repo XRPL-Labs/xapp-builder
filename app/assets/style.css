@@ -31,9 +31,9 @@ body {
 .modal-alert {
   max-width: 290px;
   max-height: 330px;
-  position: fixed;
+  position: relative;
   top: 70px;
-  left: 345px;
+  left: 9px;
 }
 
 #transactionId,

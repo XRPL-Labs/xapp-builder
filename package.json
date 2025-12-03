@@ -3,7 +3,7 @@
   "productName": "xAppBuilder",
   "description": "Build and debug your xApps for Xumm.",
   "main": "main.js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "scripts": {
     "start": "electron .",
     "watch": "nodemon --exec electron .",
@@ -48,7 +48,7 @@
         "ITSAppUsesNonExemptEncryption": false,
         "electronTeamId": "LK5BBJNJZ6"
       },
-      "bundleVersion": "43",
+      "bundleVersion": "45",
       "provisioningProfile": "xAppBuilder.provisionprofile",
       "entitlements": "entitlement/entitlements.mac.plist",
       "hardenedRuntime": true,
@@ -88,8 +88,8 @@
     "xrpl-txdata": "^2.0.1"
   },
   "devDependencies": {
-    "electron": "^28.1.2",
-    "electron-builder": "^24.9.1",
+    "electron": "^29.1.0",
+    "electron-builder": "^24.12.0",
     "nodemon": "^2.0.21"
   }
 }
